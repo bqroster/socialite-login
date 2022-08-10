@@ -1,0 +1,40 @@
+{
+    "name": "bqroster/socialite-login",
+    "description": "Handle to register - login into social register login networks",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Bqroster\\SocialiteLogin\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Bqroster\\SocialiteLogin\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jose Burgos",
+            "email": "fburgosq@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "orchestra/testbench": "^7.6"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Bqroster\\SocialiteLogin\\SocialiteLoginServiceProvider"
+            ],
+            "aliases": {
+                "SocialiteLogin": "Bqroster\\SocialiteLogin\\Facades\\SocialiteLogin"
+            }
+        }
+    },
+    "require": {
+        "laravel/socialite": "^5.5",
+        "laravel/ui": "^4.0"
+    }
+}

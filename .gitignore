@@ -1,0 +1,9 @@
+/.idea
+/.idea/workspace.xml
+/build
+/vendor
+/.sonarlint
+.env
+.env.backup
+.phpunit.result.cache
+phpcs.phar
