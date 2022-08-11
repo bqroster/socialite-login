@@ -118,7 +118,7 @@ trait HandleSocialite
         /**
          * check if user must be auto created
          */
-        if (!is_auto_create()) {
+        if (!can_user_auto_create()) {
             return null;
         }
 

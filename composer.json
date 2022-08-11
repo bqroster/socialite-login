@@ -1,11 +1,11 @@
 {
     "name": "bqroster/socialite-login",
-    "description": "Handle to register - login into social register login networks",
+    "description": "Handle register & login flow from social networks",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "files": [
-            "helpers/helpers.php"
+            "src/Helpers/helpers.php"
         ],
         "psr-4": {
             "Bqroster\\SocialiteLogin\\": "src/"

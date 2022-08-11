@@ -4,7 +4,6 @@ namespace Bqroster\SocialiteLogin;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use function Termwind\ValueObjects\uppercase;
 
 /**
  * Class SocialiteLoginServiceProvider
@@ -34,7 +33,7 @@ class SocialiteLoginServiceProvider extends ServiceProvider
 
     private function processSocialRoutes()
     {
-        $socialRoutes = socialite_networks();
+        $socialRoutes = config('socialite-login.networks');
 
         throw_if(
             !is_array($socialRoutes) || empty($socialRoutes),

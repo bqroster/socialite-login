@@ -89,11 +89,11 @@ if (!function_exists('socialite_table_name')) {
     }
 }
 
-if (!function_exists('is_auto_create')) {
+if (!function_exists('can_user_auto_create')) {
     /**
      * @return bool
      */
-    function is_auto_create()
+    function can_user_auto_create()
     {
         return (config('socialite-login.actions.create') === true);
     }
