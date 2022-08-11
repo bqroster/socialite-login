@@ -40,7 +40,7 @@ class UserSocial extends Model
 
     public function __construct(array $attributes = [])
     {
-        $this->table = config('socialite-login.table.db');
+        $this->table = socialite_table_name();
         parent::__construct($attributes);
     }
 
@@ -49,6 +49,6 @@ class UserSocial extends Model
      */
     public function user()
     {
-        return $this->belongsTo(config('socialite-login.relationship.model'));
+        return $this->belongsTo(socialite_relationship_model());
     }
 }

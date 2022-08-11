@@ -36,19 +36,22 @@ class LoginSocialController extends BaseController
         if ($socialUser = $this->handleCallback($request, $this->socialite_driver)) {
             if ($this->isEmailOnResponse($socialUser)) {
 
-                $user = $this->handleCreateSocialUser($socialUser);
+                $user = $this->handleCreateSocialUser($socialUser, $this->socialite_driver);
 
-                if (!is_null($user) && (config('socialite-login.actions.login') === true)) {
+                if (
+                    !is_null($user)
+                    && $user->canLogin($this->socialite_driver)
+                ) {
                     Auth::guard()->login($user, false);
                 }
             }
         }
 
-        if ($redirect = session()->get(config('socialite-login.redirect.sessionKey'))) {
+        if ($redirect = session()->get(redirect_session_key())) {
             return redirect($redirect);
         }
 
-        return redirect(config('socialite-login.redirect.fallback'));
+        return redirect(redirect_fallback());
     }
 
     public function cancelled(Request $request)

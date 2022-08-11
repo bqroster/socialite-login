@@ -26,12 +26,28 @@ return [
          * @options: [true|false]
          */
         'create' => true,
+
         /**
          * auto logged user
          * into the system
-         * @options: [true|false]
          */
-        'login' => true
+        'login' => [
+            /**
+             * @true
+             * user is auto-logged
+             * in the system,
+             * after social network authorized
+             * and email is present
+             */
+            'auto' => true,
+            /**
+             * @true,
+             * user is not able to login
+             * using a different network
+             * from the one registered
+             */
+            'strict' => false,
+        ],
     ],
 
     'table' => [
@@ -45,9 +61,9 @@ return [
     ],
 
     'redirect' => [
-        'sessionKey' => 'socialite.redirect',
-        'onSuccess' => null,
-        'onCancelled' => null,
+        'session_key' => 'socialite.redirect',
+        'on_success' => null,
+        'on_cancelled' => null,
         'fallback' => '/'
     ]
 ];

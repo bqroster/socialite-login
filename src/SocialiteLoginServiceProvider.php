@@ -34,7 +34,7 @@ class SocialiteLoginServiceProvider extends ServiceProvider
 
     private function processSocialRoutes()
     {
-        $socialRoutes = config('socialite-login.networks');
+        $socialRoutes = socialite_networks();
 
         throw_if(
             !is_array($socialRoutes) || empty($socialRoutes),
@@ -95,6 +95,8 @@ class SocialiteLoginServiceProvider extends ServiceProvider
     }
 
     /**
+     * set socialite networks services keys
+     *
      * @param string $network
      * @param string $routeCallback
      */

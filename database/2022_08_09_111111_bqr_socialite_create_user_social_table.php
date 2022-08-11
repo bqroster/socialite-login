@@ -16,13 +16,13 @@ class BqrSocialiteCreateUserSocialTable extends Migration
      */
     public function up()
     {
-        $relationshipModel = config('socialite-login.relationship.model');
-        Schema::create(config('socialite-login.table.db'), function (Blueprint $table) use ($relationshipModel) {
+        $relationshipTable = socialite_relationship_table();
+        Schema::create(socialite_table_name(), function (Blueprint $table) use ($relationshipTable) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign( 'user_id' )
                 ->references( 'id' )
-                ->on( (new $relationshipModel)->getTable() );
+                ->on( $relationshipTable );
             $table->json('response')->nullable();
             $table->timestamps();
         });
@@ -35,6 +35,6 @@ class BqrSocialiteCreateUserSocialTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('socialite-login.table.db'));
+        Schema::dropIfExists(socialite_table_name());
     }
 }

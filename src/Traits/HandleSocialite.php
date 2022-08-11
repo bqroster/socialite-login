@@ -109,19 +109,20 @@ trait HandleSocialite
     }
 
     /**
-     * @param \Laravel\Socialite\Contracts\User
+     * @param \Laravel\Socialite\Contracts\User $socialUser
+     * @param string $socialLogin
      * @return mixed
      */
-    private function handleCreateSocialUser($socialUser)
+    private function handleCreateSocialUser($socialUser, $socialLogin)
     {
         /**
          * check if user must be auto created
          */
-        if (config('socialite-login.actions.create') !== true) {
+        if (!is_auto_create()) {
             return null;
         }
 
-        $modelRelationship = config('socialite-login.relationship.model');
+        $modelRelationship = socialite_relationship_model();
         $user = $modelRelationship::firstOrCreate(
             ['email' => $socialUser->email],
             [
@@ -129,10 +130,15 @@ trait HandleSocialite
                 'email' => $socialUser->email,
                 'password' => bcrypt(\Str::random(12)),
                 'avatar' => $socialUser->avatar,
-                'register_with' => 'twitter',
-                'login_with' => 'twitter'
+                'register_with' => $socialLogin,
+                'login_with' => is_auto_login() ? $socialLogin : null,
             ]
         );
+
+        if (!$user->wasRecentlyCreated && $user->canLogin($socialLogin)) {
+            $user->login_with = $socialLogin;
+            $user->saveQuietly();
+        }
 
         $user->socialites()->create([
             'response' => $socialUser
