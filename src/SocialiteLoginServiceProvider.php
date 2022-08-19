@@ -68,23 +68,23 @@ class SocialiteLoginServiceProvider extends ServiceProvider
                 );
 
                 if (!is_null($routeLogin)) {
-                    Route::get($routeLogin, "{$socialController}@login");
+                    Route::get($routeLogin, "{$socialController}@login")->name("{$network}.login");
                 }
 
                 if (!is_null($routeRegister)) {
-                    Route::get($routeRegister, "{$socialController}@register");
+                    Route::get($routeRegister, "{$socialController}@register")->name("{$network}.register");
                 }
 
                 if (!is_null($routeCallback)) {
-                    Route::get($routeCallback, "{$socialController}@callback");
+                    Route::get($routeCallback, "{$socialController}@callback")->name("{$network}.callback");
                 }
 
                 if (!is_null($routeCancelled)) {
-                    Route::get($routeCancelled, "{$socialController}@cancelled");
+                    Route::get($routeCancelled, "{$socialController}@cancelled")->name("{$network}.cancelled");
                 }
 
                 if (!is_null($routeRemoved)) {
-                    Route::get($routeRemoved, "{$socialController}@removed");
+                    Route::get($routeRemoved, "{$socialController}@removed")->name("{$network}.removed");
                 }
 
                 $routeCallbackUrl = env('APP_URL') . '/' . $routeCallback;

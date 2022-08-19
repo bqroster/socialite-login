@@ -23,9 +23,29 @@ return [
          * auto create user
          * once social credentials
          * have being approved
-         * @options: [true|false]
          */
-        'create' => true,
+        'create' => [
+            /**
+             * @options: [true|false|className]
+             *
+             * @option className
+             * will ignore all the process of auto create
+             * this class, must have one public method `handle`
+             * the app will pass 2 parameters, and you must return the `User`
+             * or Model created
+             *
+             * @param \Laravel\Socialite\Contracts\User $socialUser
+             * @param string $socialLogin
+             * @return \App\Models\User
+             */
+            'auto' => true,
+
+            /**
+             * @oncreate or onupdate process
+             * if you want it saveQuietly
+             */
+            'saveQuietly' => true,
+        ],
 
         /**
          * auto logged user
@@ -38,6 +58,13 @@ return [
              * in the system,
              * after social network authorized
              * and email is present
+             *
+             * @string (className)
+             * will call your class with a method name `handle`
+             * pass one parameter, the `model` passed on the created
+             * before auto or by class
+             * @param \App\Models\User
+             * @return [redirect|null]
              */
             'auto' => true,
             /**
@@ -64,6 +91,6 @@ return [
         'session_key' => 'socialite.redirect',
         'on_success' => null,
         'on_cancelled' => null,
-        'fallback' => '/'
+        'fallback' => env('APP_URL'),
     ]
 ];

@@ -115,6 +115,11 @@ trait HandleSocialite
      */
     private function handleCreateSocialUser($socialUser, $socialLogin)
     {
+        if ($createClass = can_user_create_is_a_class()) {
+            $createInstance = new $createClass;
+            return $createInstance->handle($socialUser, $socialLogin);
+        }
+
         /**
          * check if user must be auto created
          */
@@ -126,10 +131,12 @@ trait HandleSocialite
         $user = $modelRelationship::firstOrCreate(
             ['email' => $socialUser->email],
             [
-                'first_name' => $socialUser->name,
-                'email' => $socialUser->email,
+                'name' => $socialUser->getName(),
+                'nickname' => $socialUser->getNickname(),
+                'email' => $socialUser->getEmail(),
+                'email_verified_at' => now(),
                 'password' => bcrypt(\Str::random(12)),
-                'avatar' => $socialUser->avatar,
+                'avatar' => $socialUser->getAvatar(),
                 'register_with' => $socialLogin,
                 'login_with' => is_auto_login() ? $socialLogin : null,
             ]
@@ -137,7 +144,11 @@ trait HandleSocialite
 
         if (!$user->wasRecentlyCreated && $user->canLogin($socialLogin)) {
             $user->login_with = $socialLogin;
-            $user->saveQuietly();
+            if (save_quietly_on_create()) {
+                $user->saveQuietly();
+            } else {
+                $user->save();
+            }
         }
 
         $user->socialites()->create([

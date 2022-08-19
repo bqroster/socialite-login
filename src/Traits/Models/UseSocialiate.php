@@ -35,7 +35,7 @@ trait UseSocialiate
     {
         return array_merge(
             $this->fillable,
-            ['avatar', 'register_with', 'login_with']
+            ['nickname', 'avatar', 'register_with', 'login_with']
         );
     }
 

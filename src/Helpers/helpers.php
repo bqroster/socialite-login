@@ -10,6 +10,24 @@ if (!function_exists('is_auto_login')) {
     }
 }
 
+if (!function_exists('is_login_a_class')) {
+    /**
+     * @return string|bool
+     */
+    function is_login_a_class()
+    {
+        $loginClass = config('socialite-login.actions.login.auto');
+        if (
+            is_string($loginClass)
+            && class_exists($loginClass)
+        ) {
+            return $loginClass;
+        }
+
+        return false;
+    }
+}
+
 if (!function_exists('is_login_stric')) {
     /**
      * @return bool
@@ -89,13 +107,41 @@ if (!function_exists('socialite_table_name')) {
     }
 }
 
+if (!function_exists('save_quietly_on_create')) {
+    /**
+     * @return bool
+     */
+    function save_quietly_on_create()
+    {
+        return (config('socialite-login.actions.create.saveQuietly') === true);
+    }
+}
+
 if (!function_exists('can_user_auto_create')) {
     /**
      * @return bool
      */
     function can_user_auto_create()
     {
-        return (config('socialite-login.actions.create') === true);
+        return (config('socialite-login.actions.create.auto') === true);
+    }
+}
+
+if (!function_exists('can_user_create_is_a_class')) {
+    /**
+     * @return string|bool
+     */
+    function can_user_create_is_a_class()
+    {
+        $createClass = config('socialite-login.actions.create.auto');
+        if (
+            is_string($createClass)
+            && class_exists($createClass)
+        ) {
+            return $createClass;
+        }
+
+        return false;
     }
 }
 
