@@ -33,15 +33,22 @@ class LoginSocialController extends BaseController
      */
     public function callback(Request $request)
     {
-        if ($socialUser = $this->handleCallback($request, $this->socialite_driver)) {
-            if ($this->isEmailOnResponse($socialUser)) {
+        if (
+            ($socialUser = $this->handleCallback($request, $this->socialite_driver))
+            && $this->isEmailOnResponse($socialUser)
+        ) {
+            $user = $this->handleCreateSocialUser($socialUser, $this->socialite_driver);
 
-                $user = $this->handleCreateSocialUser($socialUser, $this->socialite_driver);
-
-                if (
-                    !is_null($user)
-                    && $user->canLogin($this->socialite_driver)
-                ) {
+            if (
+                !is_null($user)
+            ) {
+                if ($loginClass = is_login_a_class()) {
+                    $loginInstance = new $loginClass;
+                    $redirect = $loginInstance->handle($user);
+                    if ($redirect) {
+                        return $redirect;
+                    }
+                } else if ($user->canLogin($this->socialite_driver)) {
                     Auth::guard()->login($user, false);
                 }
             }
