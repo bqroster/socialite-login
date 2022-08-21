@@ -17,17 +17,29 @@ class BqrSocialiteAlterUsersTable extends Migration
     public function up()
     {
         Schema::table(socialite_relationship_table(), function (Blueprint $table) {
-            $table->string('nickname')
+            $table->string('social_id')
                 ->nullable()
                 ->after(config('socialite-login.relationship.migration.after'));
 
-            $table->string('avatar')
+            $table->string('social_token', 350)
+                ->nullable()
+                ->after('social_id');
+
+            $table->string('social_refresh_token', 350)
+                ->nullable()
+                ->after('social_token');
+
+            $table->string('nickname')
+                ->nullable()
+                ->after('social_refresh_token');
+
+            $table->string('avatar_url')
                 ->nullable()
                 ->after('nickname');
 
             $table->string('register_with')
                 ->nullable()
-                ->after('avatar');
+                ->after('avatar_url');
 
             $table->string('login_with')
                 ->nullable()
@@ -44,10 +56,13 @@ class BqrSocialiteAlterUsersTable extends Migration
     {
         Schema::table(socialite_relationship_table(), function (Blueprint $table) {
             $table->dropColumn([
-                'avatar',
+                'social_id',
+                'social_token',
+                'social_refresh_token',
                 'nickname',
+                'avatar_url',
+                'register_with',
                 'login_with',
-                'register_with'
             ]);
         });
     }

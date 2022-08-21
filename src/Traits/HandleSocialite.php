@@ -127,8 +127,22 @@ trait HandleSocialite
             return null;
         }
 
+        $user = $this->createSocialUser($socialUser, $socialLogin);
+
+        $this->updateSocialUserCredentials($user, $socialUser, $socialLogin);
+
+        return $user;
+    }
+
+    /**
+     * @param \Laravel\Socialite\Contracts\User $socialUser
+     * @param string $socialLogin
+     * @return \App\Models\User|mixed
+     */
+    private function createSocialUser($socialUser, $socialLogin)
+    {
         $modelRelationship = socialite_relationship_model();
-        $user = $modelRelationship::firstOrCreate(
+        return $modelRelationship::firstOrCreate(
             ['email' => $socialUser->email],
             [
                 'name' => $socialUser->getName(),
@@ -136,25 +150,32 @@ trait HandleSocialite
                 'email' => $socialUser->getEmail(),
                 'email_verified_at' => now(),
                 'password' => bcrypt(\Str::random(12)),
-                'avatar' => $socialUser->getAvatar(),
+                'social_id' => $socialUser->getId(),
+                'avatar_url' => $socialUser->getAvatar(),
                 'register_with' => $socialLogin,
                 'login_with' => is_auto_login() ? $socialLogin : null,
+                'social_token' => $socialUser->token,
+                'social_refresh_token' => $socialUser->refreshToken ?? null,
             ]
         );
+    }
 
+    /**
+     * @param \App\Models\User|mixed $user
+     * @param \Laravel\Socialite\Contracts\User $socialUser
+     * @param string $socialLogin
+     */
+    private function updateSocialUserCredentials($user, $socialUser, $socialLogin)
+    {
         if (!$user->wasRecentlyCreated && $user->canLogin($socialLogin)) {
             $user->login_with = $socialLogin;
+            $user->social_token = $socialUser->token;
+            $user->social_refresh_token = $socialUser->refreshToken ?? null;
             if (save_quietly_on_create()) {
                 $user->saveQuietly();
             } else {
                 $user->save();
             }
         }
-
-        $user->socialites()->create([
-            'response' => $socialUser
-        ]);
-
-        return $user;
     }
 }
