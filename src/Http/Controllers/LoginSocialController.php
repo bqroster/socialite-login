@@ -2,6 +2,7 @@
 
 namespace Bqroster\SocialiteLogin\Http\Controllers;
 
+use Bqroster\SocialiteLogin\Helpers\SocialiteErrors;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -9,7 +10,6 @@ use Bqroster\SocialiteLogin\Traits\HandleSocialite;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class Controller
@@ -29,45 +29,36 @@ class LoginSocialController extends BaseController
 
     /**
      * @param Request $request
-     * @return \Laravel\Socialite\Contracts\User|null
+     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
      */
     public function callback(Request $request)
     {
-        if (
-            ($socialUser = $this->handleCallback($request, $this->socialite_driver))
-            && $this->isEmailOnResponse($socialUser)
-        ) {
-            $user = $this->handleCreateSocialUser($socialUser, $this->socialite_driver);
+        $user = null;
+        $redirectTo = redirect_url_session_key($user) ?? redirect_url_fallback($user);
 
-            if (
-                !is_null($user)
-            ) {
-                if ($loginClass = is_login_a_class()) {
-                    $loginInstance = new $loginClass;
-                    $redirect = $loginInstance->handle($user);
-                    if ($redirect) {
-                        return $redirect;
-                    }
-                } else if ($user->canLogin($this->socialite_driver)) {
-                    Auth::guard()->login($user, false);
+        if ($socialUser = $this->handleCallback($request, $this->socialite_driver)) {
+            if ($this->isEmailOnResponse($socialUser)) {
+                $user = $this->handleCreateSocialUser($socialUser, $this->socialite_driver);
+
+                if (!is_null($user)) {
+                    return $this->handleAutomaticLogin($user, $this->socialite_driver);
                 }
+            } else {
+                /**
+                 * @email not present
+                 * on social auth
+                 */
+                $redirectTo->with('socialiteErrors', SocialiteErrors::emailNotPresent($this->socialite_driver, $socialUser));
             }
+        } else {
+            /**
+             * @something went wrong
+             * user cancelled social auth,
+             * etc
+             */
+            $redirectTo->with('socialiteErrors', SocialiteErrors::userCancelled($this->socialite_driver));
         }
 
-        if ($redirect = session()->get(redirect_session_key())) {
-            return redirect($redirect);
-        }
-
-        return redirect(redirect_fallback());
-    }
-
-    public function cancelled(Request $request)
-    {
-        dd('cancelled', $request->all());
-    }
-
-    public function removed(Request $request)
-    {
-        dd('removed', $request->all());
+        return $redirectTo;
     }
 }

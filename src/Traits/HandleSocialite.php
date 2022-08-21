@@ -2,7 +2,9 @@
 
 namespace Bqroster\SocialiteLogin\Traits;
 
+use Bqroster\SocialiteLogin\Helpers\SocialiteErrors;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
 /**
@@ -44,19 +46,12 @@ trait HandleSocialite
     private function handleCallback(Request $request, string $driver)
     {
         if ($this->isErrorsOnResponse($request)) {
-            /**
-             * TODO, need to handle
-             * errors, cancel, etc
-             */
             return null;
         }
 
         try {
             $socialUser = Socialite::driver($driver)->user();
         } catch (\Exception $exception) {
-            /**
-             * TODO, Log this exception
-             */
             $socialUser = null;
         }
 
@@ -85,9 +80,6 @@ trait HandleSocialite
              */
             || $request->has('denied')
         ) {
-            /**
-             * TODO, Log request and errors
-             */
             return true;
         }
 
@@ -106,6 +98,32 @@ trait HandleSocialite
         }
 
         return true;
+    }
+
+    /**
+     * @param \App\Models\User|mixed $user
+     * @param string $socialDriver
+     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse|null
+     */
+    private function handleAutomaticLogin($user, $socialDriver)
+    {
+        if ($loginClass = is_login_a_class()) {
+            $loginInstance = new $loginClass;
+            $redirect = $loginInstance->handle($user, $socialDriver);
+            if ($redirect) {
+                return $redirect;
+            }
+        } else if ($user->canLogin($socialDriver)) {
+            Auth::guard()->login($user, false);
+        }
+
+        $redirectTo = redirect_url_session_key($user) ?? redirect_url_fallback($user);
+
+        if (!$user->canLoginVsRegister($socialDriver)) {
+            $redirectTo->with('socialiteErrors', SocialiteErrors::registerDiffLogin($socialDriver, $user));
+        }
+
+        return $redirectTo;
     }
 
     /**
@@ -129,7 +147,7 @@ trait HandleSocialite
 
         $user = $this->createSocialUser($socialUser, $socialLogin);
 
-        $this->updateSocialUserCredentials($user, $socialUser, $socialLogin);
+        $this->updateSocialUserLoginTokens($user, $socialUser, $socialLogin);
 
         return $user;
     }
@@ -146,7 +164,7 @@ trait HandleSocialite
             ['email' => $socialUser->email],
             [
                 'name' => $socialUser->getName(),
-                'nickname' => $socialUser->getNickname(),
+                'social_nickname' => $socialUser->getNickname(),
                 'email' => $socialUser->getEmail(),
                 'email_verified_at' => now(),
                 'password' => bcrypt(\Str::random(12)),
@@ -165,7 +183,7 @@ trait HandleSocialite
      * @param \Laravel\Socialite\Contracts\User $socialUser
      * @param string $socialLogin
      */
-    private function updateSocialUserCredentials($user, $socialUser, $socialLogin)
+    private function updateSocialUserLoginTokens($user, $socialUser, $socialLogin)
     {
         if (!$user->wasRecentlyCreated && $user->canLogin($socialLogin)) {
             $user->login_with = $socialLogin;

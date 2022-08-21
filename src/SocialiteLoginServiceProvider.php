@@ -40,6 +40,10 @@ class SocialiteLoginServiceProvider extends ServiceProvider
             new \Exception("config socialite-login.networks key must be an array and can not be empty")
         );
 
+        /**
+         * @register
+         * social routes
+         */
         Route::group(['namespace' => 'Bqroster\\SocialiteLogin\\Http\\Controllers', 'middleware' => 'web'], function () use ($socialRoutes) {
             foreach($socialRoutes as $key => $route) {
                 if (is_array($route)) {
@@ -48,8 +52,6 @@ class SocialiteLoginServiceProvider extends ServiceProvider
                     $routeLogin = $route['login'] ?? null;
                     $routeRegister = $route['register'] ?? null;
                     $routeCallback = $route['callback'] ?? null;
-                    $routeCancelled = $route['cancelled'] ?? null;
-                    $routeRemoved = $route['removed'] ?? null;
                 } else {
                     $network = $route;
                     $startClassName = \Str::studly($route);
@@ -57,8 +59,6 @@ class SocialiteLoginServiceProvider extends ServiceProvider
                     $routeLogin = "{$route}/login";
                     $routeRegister = "{$route}/register";
                     $routeCallback = "{$route}/login/callback";
-                    $routeCancelled = "{$route}/login/cancelled";
-                    $routeRemoved = "{$route}/login/removed";
                 }
 
                 $socialController = "${startClassName}LoginController";
@@ -77,14 +77,6 @@ class SocialiteLoginServiceProvider extends ServiceProvider
 
                 if (!is_null($routeCallback)) {
                     Route::get($routeCallback, "{$socialController}@callback")->name("{$network}.callback");
-                }
-
-                if (!is_null($routeCancelled)) {
-                    Route::get($routeCancelled, "{$socialController}@cancelled")->name("{$network}.cancelled");
-                }
-
-                if (!is_null($routeRemoved)) {
-                    Route::get($routeRemoved, "{$socialController}@removed")->name("{$network}.removed");
                 }
 
                 $routeCallbackUrl = env('APP_URL') . '/' . $routeCallback;
