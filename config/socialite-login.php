@@ -77,10 +77,6 @@ return [
         ],
     ],
 
-    'table' => [
-        'db' => 'user_socialite',
-    ],
-
     'networks' => [
         'facebook',
         'twitter',

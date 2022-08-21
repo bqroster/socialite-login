@@ -40,7 +40,7 @@ TWITTER_CLIENT_SECRET=
 
 ##### In your Relationship Model (User Model, normally), include Trait
 ```php
-use Bqroster\SocialiteLogin\Traits\Models\UseSocialiate;
+use Bqroster\SocialiteLogin\Traits\Models\UseSocialite;
 ```
 
 

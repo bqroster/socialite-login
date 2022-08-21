@@ -95,18 +95,6 @@ if (!function_exists('socialite_relationship_table')) {
     }
 }
 
-if (!function_exists('socialite_table_name')) {
-    /**
-     * Returns model and table
-     * from relationship
-     * @return string
-     */
-    function socialite_table_name()
-    {
-        return config('socialite-login.table.db');
-    }
-}
-
 if (!function_exists('save_quietly_on_create')) {
     /**
      * @return bool
