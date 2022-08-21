@@ -29,13 +29,13 @@ class BqrSocialiteAlterUsersTable extends Migration
                 ->nullable()
                 ->after('social_token');
 
-            $table->string('nickname')
+            $table->string('social_nickname')
                 ->nullable()
                 ->after('social_refresh_token');
 
             $table->string('avatar_url')
                 ->nullable()
-                ->after('nickname');
+                ->after('social_nickname');
 
             $table->string('register_with')
                 ->nullable()
@@ -59,7 +59,7 @@ class BqrSocialiteAlterUsersTable extends Migration
                 'social_id',
                 'social_token',
                 'social_refresh_token',
-                'nickname',
+                'social_nickname',
                 'avatar_url',
                 'register_with',
                 'login_with',

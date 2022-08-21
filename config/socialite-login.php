@@ -85,8 +85,12 @@ return [
 
     'redirect' => [
         'session_key' => 'socialite.redirect',
-        'on_success' => null,
-        'on_cancelled' => null,
+        /**
+         * if set,
+         * User Model will be flash
+         * on the redirect request
+         */
+        'user_key' => null,
         'fallback' => env('APP_URL'),
     ]
 ];

@@ -23,7 +23,7 @@ trait UseSocialite
                 'social_id',
                 'social_token',
                 'social_refresh_token',
-                'nickname',
+                'social_nickname',
                 'avatar_url',
                 'register_with',
                 'login_with',
@@ -67,10 +67,55 @@ trait UseSocialite
     {
         return (
             is_auto_login()
-            && (
-                (is_login_strict() && ($socialLogin === $this->register_with))
-                || !is_login_strict()
-            )
+            && $this->canLoginVsRegister($socialLogin)
         );
+    }
+
+    public function canLoginVsRegister($socialLogin)
+    {
+        return (
+            (is_login_strict() && ($socialLogin === $this->register_with))
+            || !is_login_strict()
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSocialNickname()
+    {
+        return $this->social_nickname;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSocialId()
+    {
+        return $this->social_id;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAvatar()
+    {
+        return $this->avatar_url;
     }
 }

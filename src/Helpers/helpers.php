@@ -48,6 +48,35 @@ if (!function_exists('redirect_session_key')) {
     }
 }
 
+if (!function_exists('redirect_url_session_key')) {
+    /**
+     * @param mixed $user
+     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+     */
+    function redirect_url_session_key($user)
+    {
+        if ($redirect = session()->get(redirect_session_key())) {
+            $redirectTo = redirect($redirect);
+            if ($redirectWithUser = redirect_session_user_key()) {
+                return $redirectTo->with($redirectWithUser, $user);
+            }
+            return $redirectTo;
+        }
+
+        return null;
+    }
+}
+
+if (!function_exists('redirect_session_user_key')) {
+    /**
+     * @return string|null
+     */
+    function redirect_session_user_key()
+    {
+        return config('socialite-login.redirect.user_key');
+    }
+}
+
 if (!function_exists('redirect_fallback')) {
     /**
      * @return string|null
@@ -55,6 +84,23 @@ if (!function_exists('redirect_fallback')) {
     function redirect_fallback()
     {
         return config('socialite-login.redirect.fallback');
+    }
+}
+
+if (!function_exists('redirect_url_fallback')) {
+    /**
+     * @param mixed $user
+     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+     */
+    function redirect_url_fallback($user)
+    {
+        $redirectTo = redirect(redirect_fallback());
+
+        if ($redirectWithUser = redirect_session_user_key()) {
+            return $redirectTo->with($redirectWithUser, $user);
+        }
+
+        return $redirectTo;
     }
 }
 
@@ -140,5 +186,25 @@ if (!function_exists('socialite_networks')) {
     function socialite_networks()
     {
         return config('socialite-login.networks');
+    }
+}
+
+if (!function_exists('socialite_has_errors')) {
+    /**
+     * @return bool
+     */
+    function socialite_has_errors()
+    {
+        return session()->has('socialiteErrors');
+    }
+}
+
+if (!function_exists('socialite_get_errors')) {
+    /**
+     * @return bool
+     */
+    function socialite_get_errors()
+    {
+        return session()->get('socialiteErrors');
     }
 }
