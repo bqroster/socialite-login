@@ -120,7 +120,10 @@ trait HandleSocialite
         $redirectTo = redirect_url_session_key($user) ?? redirect_url_fallback($user);
 
         if (!$user->canLoginVsRegister($socialDriver)) {
-            $redirectTo->with('socialiteErrors', SocialiteErrors::registerDiffLogin($socialDriver, $user));
+            $redirectTo->with(
+                SocialiteErrors::ERRORS_KEY,
+                SocialiteErrors::registerDiffLogin($socialDriver, $user)
+            );
         }
 
         return $redirectTo;

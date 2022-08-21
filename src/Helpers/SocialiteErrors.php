@@ -9,6 +9,11 @@ namespace Bqroster\SocialiteLogin\Helpers;
 class SocialiteErrors
 {
     /**
+     * @var string
+     */
+    const ERRORS_KEY = 'socialiteErrors';
+
+    /**
      * @param string $socialDriver
      * @param \Laravel\Socialite\Contracts\User $socialUser
      * @return array

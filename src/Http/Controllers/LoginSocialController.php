@@ -48,7 +48,10 @@ class LoginSocialController extends BaseController
                  * @email not present
                  * on social auth
                  */
-                $redirectTo->with('socialiteErrors', SocialiteErrors::emailNotPresent($this->socialite_driver, $socialUser));
+                $redirectTo->with(
+                    SocialiteErrors::ERRORS_KEY,
+                    SocialiteErrors::emailNotPresent($this->socialite_driver, $socialUser)
+                );
             }
         } else {
             /**
@@ -56,7 +59,10 @@ class LoginSocialController extends BaseController
              * user cancelled social auth,
              * etc
              */
-            $redirectTo->with('socialiteErrors', SocialiteErrors::userCancelled($this->socialite_driver));
+            $redirectTo->with(
+                SocialiteErrors::ERRORS_KEY,
+                SocialiteErrors::userCancelled($this->socialite_driver)
+            );
         }
 
         return $redirectTo;
