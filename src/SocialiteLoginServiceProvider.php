@@ -24,11 +24,9 @@ class SocialiteLoginServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->bind('socialite-login', function() {
-            return new SocialiteLogin();
-        });
-
-        $this->mergeConfigFrom(__DIR__ . '/../config/socialite-login.php', 'socialite-login');
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/socialite-login.php', 'socialite-login'
+        );
     }
 
     private function processSocialRoutes()
